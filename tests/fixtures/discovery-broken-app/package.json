@@ -1,0 +1,8 @@
+{
+  "name": "discovery-broken-app",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "clipper-plugin-broken": "file:./node_modules/clipper-plugin-broken"
+  }
+}

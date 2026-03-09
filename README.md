@@ -66,7 +66,38 @@ export default {
 }
 ```
 
-用户配置会按名称与默认插件合并，用户定义优先，默认插件兜底。
+用户配置会按名称与自动发现的插件合并；用户配置继续用于覆盖行为，默认插件兜底。
+
+## Plugin Authoring
+
+安装到当前项目可解析范围内的插件会被自动发现，无需再在 `clipper.config.*` 中手动注册。推荐使用 `clipper-plugin-*` 或 `@scope/clipper-plugin-*` 包名，并在插件包的 `package.json` 中声明 `clipper.plugin` 元数据：
+
+```json
+{
+  "name": "clipper-plugin-example",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "clipper": {
+    "plugin": true,
+    "apiVersion": 1,
+    "kind": ["collector", "publisher"],
+    "entry": "./dist/index.js"
+  }
+}
+```
+
+插件模块应导出 `default` 或命名导出 `plugin`，并返回包含 `name`、`collectors`、`transformers`、`publishers` 的对象。
+
+本地未发布插件同样支持，只要它已经安装到当前项目：
+
+- `npm install ../clipper-plugin-local`
+- `npm install file:../clipper-plugin-local`
+- workspace 依赖
+- `npm link clipper-plugin-local`
+
+可以通过 `clipper plugins` 查看已加载插件；排查问题时使用 verbose 列表输出查看发现和加载诊断。
 
 ## Debug
 
