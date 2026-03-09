@@ -31,3 +31,40 @@ export interface RuntimeConfig {
   transformers: TransformerPlugin[]
   publishers: PublisherPlugin[]
 }
+
+export interface ClipperPluginManifest {
+  packageName: string
+  plugin: boolean
+  apiVersion: number
+  kind?: Array<'collector' | 'transformer' | 'publisher'>
+  entry?: string
+}
+
+export interface PluginDiagnostic {
+  packageName: string
+  stage: 'resolve' | 'manifest' | 'import' | 'validate'
+  status: 'discovered' | 'loaded' | 'skipped' | 'failed'
+  message: string
+}
+
+export interface DiscoveredPlugin {
+  packageName: string
+  packagePath: string
+  manifestPath: string
+  manifest: ClipperPluginManifest
+}
+
+export interface LoadedPluginModule extends RuntimeConfig {
+  packageName: string
+  pluginName: string
+}
+
+export interface PluginDiscoveryResult {
+  discovered: DiscoveredPlugin[]
+  loaded: LoadedPluginModule[]
+  diagnostics: PluginDiagnostic[]
+}
+
+export interface RuntimeConfigResolution extends RuntimeConfig {
+  diagnostics: PluginDiagnostic[]
+}
