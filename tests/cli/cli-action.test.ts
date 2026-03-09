@@ -28,4 +28,14 @@ describe('cli action binding', () => {
     const outputFile = join(outputDir, 'CLI Hello.md')
     expect(readFileSync(outputFile, 'utf8')).toContain('CLI World')
   })
+
+  it('does not expose unused command registration helpers', async () => {
+    const collectModule = await import('../../src/cli/commands/collect.js')
+    const publishModule = await import('../../src/cli/commands/publish.js')
+    const pluginsModule = await import('../../src/cli/commands/plugins.js')
+
+    expect('registerCollectCommand' in collectModule).toBe(false)
+    expect('registerPublishCommand' in publishModule).toBe(false)
+    expect('registerPluginsCommand' in pluginsModule).toBe(false)
+  })
 })

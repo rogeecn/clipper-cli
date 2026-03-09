@@ -66,8 +66,3 @@ export async function runCollectCommand(options: CollectOptions) {
   }
 }
 
-export function registerCollectCommand() {
-  return {
-    name: 'collect'
-  }
-}

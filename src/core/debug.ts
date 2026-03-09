@@ -11,10 +11,6 @@ export interface DebugArtifacts {
   screenshot?: Buffer
 }
 
-export function createDebugArtifacts(): Omit<DebugArtifacts, 'cwd'> {
-  return {}
-}
-
 export async function writeDebugArtifacts(artifacts: DebugArtifacts): Promise<string> {
   const outputDir = join(artifacts.cwd, '.clipper', 'debug', String(Date.now()))
   await mkdir(outputDir, { recursive: true })

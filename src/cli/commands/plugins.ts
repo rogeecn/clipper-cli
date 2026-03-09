@@ -10,8 +10,3 @@ export async function listPlugins(options: { cwd?: string; config?: string } = {
   }
 }
 
-export function registerPluginsCommand() {
-  return {
-    name: 'plugins'
-  }
-}
