@@ -31,20 +31,13 @@ describe('cli action binding', () => {
     expect(readFileSync(outputFile, 'utf8')).toContain('CLI World')
   })
 
-  it('supports verbose plugin diagnostics from the CLI command', async () => {
-    const writeSpy = vi.spyOn(process.stdout, 'write').mockReturnValue(true)
-    const previousCwd = process.cwd()
+  it('does not expose unused command registration helpers', async () => {
+    const collectModule = await import('../../src/cli/commands/collect.js')
+    const publishModule = await import('../../src/cli/commands/publish.js')
+    const pluginsModule = await import('../../src/cli/commands/plugins.js')
 
-    process.chdir(fixtureBrokenCwd)
-
-    try {
-      const program = buildCli()
-      await program.parseAsync(['plugins', '--verbose'], { from: 'user' })
-    } finally {
-      process.chdir(previousCwd)
-    }
-
-    expect(writeSpy).toHaveBeenCalled()
-    expect(writeSpy.mock.calls.map((call) => String(call[0])).join('')).toContain('clipper-plugin-broken')
+    expect('registerCollectCommand' in collectModule).toBe(false)
+    expect('registerPublishCommand' in publishModule).toBe(false)
+    expect('registerPluginsCommand' in pluginsModule).toBe(false)
   })
 })

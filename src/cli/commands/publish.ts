@@ -32,8 +32,3 @@ export async function runPublishCommand(options: PublishOptions) {
   }
 }
 
-export function registerPublishCommand() {
-  return {
-    name: 'publish'
-  }
-}

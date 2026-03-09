@@ -26,4 +26,10 @@ describe('debug artifacts', () => {
     expect(existsSync(join(outputDir, 'screenshot.png'))).toBe(true)
     expect(readFileSync(join(outputDir, 'document.json'), 'utf8')).toContain('Hello')
   })
+
+  it('does not expose the unused debug artifact factory', async () => {
+    const debugModule = await import('../../src/core/debug.js')
+
+    expect('createDebugArtifacts' in debugModule).toBe(false)
+  })
 })
