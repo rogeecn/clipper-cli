@@ -4,6 +4,8 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { buildCli } from '../../src/cli/index.js'
 
+const fixtureBrokenCwd = new URL('../fixtures/discovery-broken-app', import.meta.url).pathname
+
 afterEach(() => {
   vi.restoreAllMocks()
 })
