@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { runHooks } from '../../src/hooks/runner'
+import { runHooks } from '../../packages/clipper-cli/src/hooks/runner'
 
 describe('hook runner', () => {
   it('executes hooks in registration order', async () => {

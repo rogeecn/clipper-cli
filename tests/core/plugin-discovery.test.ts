@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { discoverPlugins } from '../../src/core/config.js'
+import { discoverPlugins } from '../../packages/clipper-cli/src/core/config.js'
 
 const fixtureCwd = new URL('../fixtures/discovery-app', import.meta.url).pathname
 const fixtureBrokenCwd = new URL('../fixtures/discovery-broken-app', import.meta.url).pathname

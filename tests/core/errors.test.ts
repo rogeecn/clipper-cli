@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ClipperError } from '../../src/core/errors.js'
+import { ClipperError } from '../../packages/clipper-cli/src/core/errors.js'
 
 describe('clipper error', () => {
   it('stores a stable error code', () => {

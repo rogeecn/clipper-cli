@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { ClipperDocument } from '../../src/types/document'
-import type { ClipperPluginManifest, PluginDiagnostic } from '../../src/types/plugin'
+import type { ClipperDocument } from '../../packages/clipper-cli/src/types/document'
+import type { ClipperPluginManifest, PluginDiagnostic } from '../../packages/clipper-cli/src/types/plugin'
 
 describe('document shape', () => {
   it('requires markdown and html content fields', () => {

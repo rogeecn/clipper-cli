@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { defaultTransformer } from '../../src/transformers/default'
+import { defaultTransformer } from '../../packages/clipper-cli/src/transformers/default'
 
 describe('default transformer', () => {
   it('extracts title and markdown from html', async () => {

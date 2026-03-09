@@ -2,7 +2,7 @@ import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { resolveRuntimeConfig } from '../../src/core/config.js'
+import { resolveRuntimeConfig } from '../../packages/clipper-cli/src/core/config.js'
 
 describe('config validation', () => {
   it('throws a coded error when collectors is not an array', async () => {

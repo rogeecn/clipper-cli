@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { buildCli } from '../../src/cli/index.js'
+import { buildCli } from '../../packages/clipper-cli/src/cli/index.js'
 
 const fixtureBrokenCwd = new URL('../fixtures/discovery-broken-app', import.meta.url).pathname
 
@@ -32,9 +32,9 @@ describe('cli action binding', () => {
   })
 
   it('does not expose unused command registration helpers', async () => {
-    const collectModule = await import('../../src/cli/commands/collect.js')
-    const publishModule = await import('../../src/cli/commands/publish.js')
-    const pluginsModule = await import('../../src/cli/commands/plugins.js')
+    const collectModule = await import('../../packages/clipper-cli/src/cli/commands/collect.js')
+    const publishModule = await import('../../packages/clipper-cli/src/cli/commands/publish.js')
+    const pluginsModule = await import('../../packages/clipper-cli/src/cli/commands/plugins.js')
 
     expect('registerCollectCommand' in collectModule).toBe(false)
     expect('registerPublishCommand' in publishModule).toBe(false)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { markdownPublisher } from '../../src/publishers/markdown'
+import { markdownPublisher } from '../../packages/clipper-cli/src/publishers/markdown'
 
 describe('markdown publisher', () => {
   it('creates a markdown file path from the document title', () => {

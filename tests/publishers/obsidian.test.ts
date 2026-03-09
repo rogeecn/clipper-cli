@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { obsidianPublisher } from '../../src/publishers/obsidian'
+import { obsidianPublisher } from '../../packages/clipper-cli/src/publishers/obsidian'
 
 describe('obsidian publisher', () => {
   it('stores assets under an attachments directory', () => {

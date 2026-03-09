@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { listPlugins } from '../../src/cli/commands/plugins.js'
+import { listPlugins } from '../../packages/clipper-cli/src/cli/commands/plugins.js'
 
 const fixtureCwd = new URL('../fixtures/discovery-app', import.meta.url).pathname
 const fixtureBrokenCwd = new URL('../fixtures/discovery-broken-app', import.meta.url).pathname

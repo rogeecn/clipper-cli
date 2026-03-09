@@ -9,7 +9,7 @@ const packageTsconfig = tsconfig as {
 
 describe('clipper-cli package tsconfig', () => {
   it('describes an honest package-local boundary after Task 3 source migration', () => {
-    expect(packageTsconfig.extends).toBe('../../tsconfig.json')
+    expect(packageTsconfig.extends).toBe('../../tsconfig.base.json')
     expect(packageTsconfig.compilerOptions).toMatchObject({
       noEmit: true
     })

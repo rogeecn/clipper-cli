@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildCli } from '../../src/cli/index'
+import { buildCli } from '../../packages/clipper-cli/src/cli/index'
 
 describe('collect command', () => {
   it('registers the collect command', () => {

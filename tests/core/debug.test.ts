@@ -2,7 +2,7 @@ import { mkdtempSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { writeDebugArtifacts } from '../../src/core/debug.js'
+import { writeDebugArtifacts } from '../../packages/clipper-cli/src/core/debug.js'
 
 describe('debug artifacts', () => {
   it('writes request, response, html, document, and screenshot files', async () => {
@@ -28,7 +28,7 @@ describe('debug artifacts', () => {
   })
 
   it('does not expose the unused debug artifact factory', async () => {
-    const debugModule = await import('../../src/core/debug.js')
+    const debugModule = await import('../../packages/clipper-cli/src/core/debug.js')
 
     expect('createDebugArtifacts' in debugModule).toBe(false)
   })

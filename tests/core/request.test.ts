@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { performRequest } from '../../src/core/request'
+import { performRequest } from '../../packages/clipper-cli/src/core/request'
 
 describe('request runtime', () => {
   it('normalizes an html response into response context', async () => {

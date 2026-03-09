@@ -29,7 +29,7 @@
   },
   "scripts": {
     "build": "pnpm -r build",
-    "test": "pnpm -r build && vitest run && pnpm -r test"
+    "test": "pnpm -r build && vitest run --config vitest.workspace-root.config.ts && pnpm -r test"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",

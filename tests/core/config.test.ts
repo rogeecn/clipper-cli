@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createRegistry } from '../../src/core/registry'
+import { createRegistry } from '../../packages/clipper-cli/src/core/registry'
 
 describe('plugin registry', () => {
   it('finds the first collector matching a url', () => {

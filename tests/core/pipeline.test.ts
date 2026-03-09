@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { runPipeline } from '../../src/core/pipeline'
+import { runPipeline } from '../../packages/clipper-cli/src/core/pipeline'
 
 describe('pipeline fallback', () => {
   it('uses client fallback when collector requests it', async () => {

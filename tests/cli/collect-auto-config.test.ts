@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { runCollectCommand } from '../../src/cli/commands/collect.js'
+import { runCollectCommand } from '../../packages/clipper-cli/src/cli/commands/collect.js'
 
 afterEach(() => {
   vi.restoreAllMocks()

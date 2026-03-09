@@ -2,7 +2,7 @@ import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { runPublishCommand } from '../../src/cli/commands/publish.js'
+import { runPublishCommand } from '../../packages/clipper-cli/src/cli/commands/publish.js'
 
 describe('publish command runtime', () => {
   it('publishes an existing document json through a file publisher', async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createPlaywrightClientRunner } from '../../src/core/client.js'
+import { createPlaywrightClientRunner } from '../../packages/clipper-cli/src/core/client.js'
 
 describe('playwright client runner', () => {
   it('uses collector cdp options and returns page html', async () => {

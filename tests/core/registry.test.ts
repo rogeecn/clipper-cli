@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createRegistry } from '../../src/core/registry.js'
+import { createRegistry } from '../../packages/clipper-cli/src/core/registry.js'
 
 describe('registry transformer resolution', () => {
   it('resolves a transformer by exact name', () => {

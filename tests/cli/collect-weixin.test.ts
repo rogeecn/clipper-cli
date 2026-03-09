@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { runCollectCommand } from '../../src/cli/commands/collect.js'
+import { runCollectCommand } from '../../packages/clipper-cli/src/cli/commands/collect.js'
 
 const fixtureCwd = fileURLToPath(new URL('../fixtures/discovery-app/', import.meta.url))
 const articleHtml = readFileSync(new URL('../fixtures/weixin/article.html', import.meta.url), 'utf8')

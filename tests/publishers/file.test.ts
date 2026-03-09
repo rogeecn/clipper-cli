@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createFilePublisher } from '../../src/publishers/file'
+import { createFilePublisher } from '../../packages/clipper-cli/src/publishers/file'
 
 describe('file publisher factory', () => {
   it('creates a publisher with a configurable asset directory', () => {

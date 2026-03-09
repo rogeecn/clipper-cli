@@ -24,5 +24,6 @@ describe('clipper-cli package publish settings', () => {
     expect(scripts?.build).toEqual(expect.stringContaining('tsc -p tsconfig.build.json'))
     expect(scripts?.test).toEqual(expect.stringContaining('pnpm --filter clipper-plugin-weixin build'))
     expect(scripts?.test).toEqual(expect.stringContaining('pnpm run build'))
+    expect(scripts?.test).toEqual(expect.stringContaining('vitest run --config vitest.config.ts'))
   })
 })
