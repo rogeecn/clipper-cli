@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises'
+import { access, readFile, realpath } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { defaultConfig } from './defaults.js'
@@ -74,7 +74,17 @@ async function readJsonFile<T>(filePath: string): Promise<T> {
   return JSON.parse(await readFile(filePath, 'utf8')) as T
 }
 
-async function resolvePackageManifestPath(cwd: string, packageName: string): Promise<string> {
+async function resolvePackageManifestPath(cwd: string, packageName: string, specifier?: string): Promise<string> {
+  if (specifier?.startsWith('file:')) {
+    const dependencyPath = specifier.slice('file:'.length)
+    const manifestPath = resolve(cwd, dependencyPath, 'package.json')
+    const manifest = await readJsonFile<Record<string, unknown>>(manifestPath)
+
+    if (manifest.name === packageName) {
+      return await realpath(manifestPath)
+    }
+  }
+
   let currentDir = cwd
 
   while (true) {
@@ -83,7 +93,7 @@ async function resolvePackageManifestPath(cwd: string, packageName: string): Pro
     try {
       const manifest = await readJsonFile<Record<string, unknown>>(manifestPath)
       if (manifest.name === packageName) {
-        return manifestPath
+        return await realpath(manifestPath)
       }
     } catch {
       // continue walking upward
@@ -98,20 +108,20 @@ async function resolvePackageManifestPath(cwd: string, packageName: string): Pro
   }
 }
 
-function getDependencyNames(packageJson: Record<string, unknown>): string[] {
+function getDependencyEntries(packageJson: Record<string, unknown>): Array<[string, string]> {
   const sections = ['dependencies', 'optionalDependencies', 'devDependencies'] as const
-  const names = new Set<string>()
+  const entries = new Map<string, string>()
 
   for (const section of sections) {
     const value = packageJson[section]
     if (value && typeof value === 'object') {
-      for (const name of Object.keys(value as Record<string, string>)) {
-        names.add(name)
+      for (const [name, specifier] of Object.entries(value as Record<string, string>)) {
+        entries.set(name, specifier)
       }
     }
   }
 
-  return [...names]
+  return [...entries.entries()]
 }
 
 function toManifest(packageJson: Record<string, unknown>, packageName: string): ClipperPluginManifest | undefined {
@@ -239,13 +249,13 @@ export async function discoverPlugins(options: { cwd?: string; load?: boolean } 
   const cwd = options.cwd ?? process.cwd()
   const rootPackagePath = join(cwd, 'package.json')
   const rootPackageJson = await readJsonFile<Record<string, unknown>>(rootPackagePath)
-  const dependencyNames = getDependencyNames(rootPackageJson)
+  const dependencyEntries = getDependencyEntries(rootPackageJson)
   const diagnostics: PluginDiagnostic[] = []
   const discovered: DiscoveredPlugin[] = []
 
-  for (const packageName of dependencyNames) {
+  for (const [packageName, specifier] of dependencyEntries) {
     try {
-      const manifestPath = await resolvePackageManifestPath(cwd, packageName)
+      const manifestPath = await resolvePackageManifestPath(cwd, packageName, specifier)
       const packageJson = await readJsonFile<Record<string, unknown>>(manifestPath)
       const manifest = toManifest(packageJson, packageName)
 
