@@ -15,4 +15,13 @@ describe('readme', () => {
     expect(readme).toContain('workspace')
     expect(readme).toContain('clipper plugins')
   })
+
+  it('documents the weixin plugin workflow', () => {
+    const readme = readFileSync('README.md', 'utf8')
+
+    expect(readme).toContain('clipper-plugin-weixin')
+    expect(readme).toContain('与当前 `collector` 同名的 `transformer`')
+    expect(readme).toContain('mp.weixin.qq.com/s')
+    expect(readme).toContain('fetch.js')
+  })
 })

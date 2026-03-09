@@ -12,10 +12,11 @@ describe('plugins list command', () => {
     expect(result.publishers).toContain('markdown')
   })
 
-  it('includes auto-discovered plugin names alongside built-ins', async () => {
+  it('includes auto-discovered weixin plugin names alongside built-ins', async () => {
     const result = await listPlugins({ cwd: fixtureCwd })
 
-    expect(result.publishers).toContain('fixture-publisher')
+    expect(result.collectors).toContain('weixin')
+    expect(result.transformers).toContain('weixin')
     expect(result.publishers).toContain('markdown')
   })
 

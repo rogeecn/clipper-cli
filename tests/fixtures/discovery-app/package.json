@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "clipper-plugin-local": "file:./node_modules/clipper-plugin-local",
-    "clipper-plugin-conditional": "file:./node_modules/clipper-plugin-conditional"
+    "clipper-plugin-conditional": "file:./node_modules/clipper-plugin-conditional",
+    "clipper-plugin-weixin": "file:./node_modules/clipper-plugin-weixin"
   }
 }

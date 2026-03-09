@@ -19,7 +19,7 @@ export async function runCollectCommand(options: CollectOptions) {
   const runtimeConfig = await resolveRuntimeConfig({ cwd: options.cwd, configPath: options.config })
   const registry = createRegistry(runtimeConfig)
   const collector = registry.resolveCollectorPlugin(options.url)
-  const transformer = registry.resolveTransformer()
+  const transformer = collector ? registry.resolveTransformer(collector.name) ?? registry.resolveTransformer() : registry.resolveTransformer()
   const publisher = registry.resolvePublisher(options.publisher)
 
   if (!collector || !transformer || !publisher) {

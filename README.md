@@ -102,6 +102,24 @@ export default {
 
 可以通过 `clipper plugins` 查看已加载插件；排查问题时使用 `clipper plugins --verbose` 查看发现和加载诊断。
 
+宿主在执行 `collect` 时，会优先选择与当前 `collector` 同名的 `transformer`。如果没有同名 `transformer`，才会回退到默认的第一个 `transformer`。这样像站点专用插件就可以在自动发现后直接接管自己的解析流程，而不用手工调整顺序。
+
+## Weixin Plugin
+
+如果你想把旧的 `fetch.js` 微信公众号抓取流程迁到当前插件架构，可以安装一个外部插件包，例如 `clipper-plugin-weixin`：
+
+```bash
+npm install clipper-cli clipper-plugin-weixin
+```
+
+安装后，`clipper-plugin-weixin` 会像其他插件一样被自动发现。对于 `mp.weixin.qq.com/s` 文章链接，宿主会自动命中 `weixin` collector，并优先使用与当前 `collector` 同名的 `transformer` 来完成正文提取、OG 元数据整理、站内文章链接抽取和 Markdown 转换。
+
+```bash
+clipper collect "https://mp.weixin.qq.com/s?__biz=example" --publisher markdown --output ./notes
+```
+
+这条链路的目标是替代原来的 `fetch.js` 单体执行流程，但输出会落到标准 `ClipperDocument` 结构和现有发布器体系中。
+
 ## Debug
 
 开启 `--debug` 后，会写入：
