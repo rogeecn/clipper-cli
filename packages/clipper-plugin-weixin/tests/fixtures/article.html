@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Ignored title</title>
+    <meta property="og:title" content="Weixin Fixture Article">
+    <meta property="og:description" content="Fixture article excerpt">
+    <meta property="og:image" content="https://cdn.example.com/cover.jpg">
+    <meta property="og:url" content="https://mp.weixin.qq.com/s/fixture-article">
+    <meta property="og:site_name" content="Weixin">
+    <meta name="description" content="Should be ignored">
+  </head>
+  <body>
+    <div id="js_content">
+      <h1 data-test="headline">Fixture Heading</h1>
+      <p>
+        Intro paragraph with
+        <a href="/s?__biz=second">Related article</a>
+        and
+        <a href="https://example.com/elsewhere">external link</a>.
+      </p>
+      <p><img data-src="https://cdn.example.com/image.jpg" data-role="content-image" alt="fixture image"></p>
+    </div>
+    <script>window.shouldDisappear = true</script>
+    <style>body { color: red; }</style>
+  </body>
+</html>

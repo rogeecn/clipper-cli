@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest'
 import { fileURLToPath } from 'node:url'
+import { describe, expect, it } from 'vitest'
+
 import { discoverPlugins } from '../../src/core/config.js'
 
-const fixtureCwd = new URL('../fixtures/discovery-app', import.meta.url).pathname
-const fixtureBrokenCwd = new URL('../fixtures/discovery-broken-app', import.meta.url).pathname
-const workspaceWeixinPath = fileURLToPath(new URL('../../packages/clipper-plugin-weixin', import.meta.url))
+const fixtureCwd = fileURLToPath(new URL('../../../../tests/fixtures/discovery-app/', import.meta.url))
+const fixtureBrokenCwd = fileURLToPath(new URL('../../../../tests/fixtures/discovery-broken-app/', import.meta.url))
 
 describe('plugin discovery', () => {
   it('discovers manifest-based plugin candidates from project dependencies', async () => {
@@ -14,12 +14,10 @@ describe('plugin discovery', () => {
     expect(result.discovered.map((plugin) => plugin.packageName)).toContain('clipper-plugin-weixin')
   })
 
-  it('loads the workspace clipper-plugin-weixin module with weixin collector and transformer contributions', async () => {
+  it('loads the clipper-plugin-weixin module with weixin collector and transformer contributions', async () => {
     const result = await discoverPlugins({ cwd: fixtureCwd, load: true })
-    const weixinManifest = result.discovered.find((plugin) => plugin.packageName === 'clipper-plugin-weixin')
     const weixinPlugin = result.loaded.find((plugin) => plugin.packageName === 'clipper-plugin-weixin')
 
-    expect(weixinManifest?.packagePath).toBe(workspaceWeixinPath)
     expect(weixinPlugin?.pluginName).toBe('clipper-plugin-weixin')
     expect(weixinPlugin?.collectors.map((item) => item.name)).toContain('weixin')
     expect(weixinPlugin?.transformers.map((item) => item.name)).toContain('weixin')

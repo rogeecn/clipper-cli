@@ -1,0 +1,66 @@
+{
+  "name": "clipper-plugin-weixin",
+  "version": "0.1.0",
+  "description": "Weixin collector and transformer plugin for clipper-cli.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "clipper",
+    "weixin",
+    "plugin",
+    "wechat",
+    "markdown"
+  ],
+  "author": "Rogee",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rogeecn/clipper-cli.git"
+  },
+  "homepage": "https://github.com/rogeecn/clipper-cli/tree/main/packages/clipper-plugin-weixin#readme",
+  "bugs": {
+    "url": "https://github.com/rogeecn/clipper-cli/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node -e \"import('node:fs').then(({ rmSync }) => rmSync('dist', { recursive: true, force: true }))\" && tsc -p tsconfig.build.json",
+    "test": "pnpm run build && vitest run --config vitest.config.ts"
+  },
+  "dependencies": {
+    "jsdom": "^26.0.0",
+    "turndown": "^7.2.0"
+  },
+  "peerDependencies": {
+    "clipper-cli": "^0.1.0"
+  },
+  "devDependencies": {
+    "clipper-cli": "workspace:*",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.13.10",
+    "@types/turndown": "^5.0.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  },
+  "clipper": {
+    "plugin": true,
+    "apiVersion": 1,
+    "kind": [
+      "collector",
+      "transformer"
+    ],
+    "entry": "./dist/index.js"
+  }
+}

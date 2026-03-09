@@ -1,0 +1,53 @@
+{
+  "name": "clipper-cli",
+  "version": "0.1.0",
+  "description": "Plugin-first CLI for collecting web content with request and client fallback, then publishing to Markdown-based note systems.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "clipper",
+    "web-clipping",
+    "markdown",
+    "obsidian",
+    "siyuan",
+    "playwright",
+    "cli"
+  ],
+  "author": "Rogee",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rogeecn/clipper-cli.git"
+  },
+  "homepage": "https://github.com/rogeecn/clipper-cli#readme",
+  "bugs": {
+    "url": "https://github.com/rogeecn/clipper-cli/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "clipper": "./dist/cli/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node -e \"import('node:fs').then(({ rmSync }) => rmSync('dist', { recursive: true, force: true }))\" && tsc -p tsconfig.build.json",
+    "test": "pnpm --filter clipper-plugin-weixin build && pnpm run build && vitest run --config vitest.config.ts",
+    "test:task3": "pnpm --filter clipper-plugin-weixin build && pnpm run build && vitest run --config vitest.task3.config.ts"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "jsdom": "^26.0.0",
+    "playwright": "^1.50.1",
+    "turndown": "^7.2.0"
+  }
+}

@@ -1,12 +1,12 @@
 import pkg from '../package.json'
 import { describe, expect, it } from 'vitest'
 
-describe('package metadata', () => {
-  it('is ready for npm publishing', () => {
-    expect(pkg.private).not.toBe(true)
-    expect(pkg.description).toBeTruthy()
-    expect(pkg.license).toBeTruthy()
-    expect(pkg.keywords?.length).toBeGreaterThan(0)
-    expect(pkg.repository).toBeTruthy()
+const rootPkg = pkg as Record<string, unknown>
+
+describe('workspace root metadata', () => {
+  it('declares root-only workspace metadata', () => {
+    expect(rootPkg.private).toBe(true)
+    expect(rootPkg.packageManager).toMatch(/^pnpm@/)
+    expect(rootPkg.repository).toBeTruthy()
   })
 })

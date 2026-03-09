@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "clipper-cli": [
+        "../clipper-cli/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "tests",
+    "package.json",
+    "vitest.config.ts"
+  ]
+}

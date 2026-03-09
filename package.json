@@ -1,7 +1,9 @@
 {
-  "name": "clipper-cli",
+  "name": "clipper-cli-workspace",
   "version": "0.1.0",
   "description": "Plugin-first CLI for collecting web content with request and client fallback, then publishing to Markdown-based note systems.",
+  "private": true,
+  "packageManager": "pnpm@10.6.5",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -22,33 +24,12 @@
   "bugs": {
     "url": "https://github.com/rogeecn/clipper-cli/issues"
   },
-  "bin": {
-    "clipper": "dist/src/cli/index.js"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/src/index.d.ts",
-      "default": "./dist/src/index.js"
-    }
-  },
   "engines": {
     "node": ">=18"
   },
-  "files": [
-    "dist",
-    "README.md",
-    "examples"
-  ],
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig.json",
-    "test": "vitest run",
-    "prepublishOnly": "npm run build && npm test"
-  },
-  "dependencies": {
-    "commander": "^12.1.0",
-    "jsdom": "^26.0.0",
-    "playwright": "^1.50.1",
-    "turndown": "^7.2.0"
+    "build": "pnpm -r build",
+    "test": "pnpm -r build && vitest run && pnpm -r test"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
