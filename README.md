@@ -21,19 +21,19 @@ npm install clipper-cli
 ## Usage
 
 ```bash
-clipper collect <url> --publisher markdown --output ./notes
-clipper collect <url> --publisher obsidian --output ./vault --debug
-clipper publish ./document.json --publisher markdown --output ./notes
-clipper plugins
-clipper plugins --verbose
+clipper-cli collect <url> --publisher markdown --output ./notes
+clipper-cli collect <url> --publisher obsidian --output ./vault --debug
+clipper-cli publish ./document.json --publisher markdown --output ./notes
+clipper-cli plugins
+clipper-cli plugins --verbose
 ```
 
 ## Commands
 
-- `clipper collect <url>`：采集页面、转换内容并发布到目标目录
-- `clipper publish <input>`：对已有标准文档执行发布
-- `clipper plugins`：查看已加载插件
-- `clipper plugins --verbose`：查看插件发现与加载诊断
+- `clipper-cli collect <url>`：采集页面、转换内容并发布到目标目录
+- `clipper-cli publish <input>`：对已有标准文档执行发布
+- `clipper-cli plugins`：查看已加载插件
+- `clipper-cli plugins --verbose`：查看插件发现与加载诊断
 
 ## Config
 
@@ -106,15 +106,15 @@ export default {
 # 在插件目录里注册全局 link
 npm link
 
-# 在实际运行 clipper 的项目目录里把插件 link 进当前项目
+# 在实际运行 clipper-cli 的项目目录里把插件 link 进当前项目
 npm link clipper-plugin-local
 ```
 
-仅在插件目录里执行一次 `npm link` 还不够；`clipper` 只会发现“当前项目依赖树里可见”的插件，不会把全局 link 自动当作当前项目插件。
+仅在插件目录里执行一次 `npm link` 还不够；`clipper-cli` 只会发现“当前项目依赖树里可见”的插件，不会把全局 link 自动当作当前项目插件。
 
-另外，插件包需要先产出可导入的构建结果（例如 `dist/index.js`）。如果插件入口指向 `dist`，记得先运行对应的构建命令，再执行 `clipper plugins` 或 `clipper collect`。
+另外，插件包需要先产出可导入的构建结果（例如 `dist/index.js`）。如果插件入口指向 `dist`，记得先运行对应的构建命令，再执行 `clipper-cli plugins` 或 `clipper-cli collect`。
 
-可以通过 `clipper plugins` 查看已加载插件；排查问题时使用 `clipper plugins --verbose` 查看发现和加载诊断。
+可以通过 `clipper-cli plugins` 查看已加载插件；排查问题时使用 `clipper-cli plugins --verbose` 查看发现和加载诊断。
 
 宿主在执行 `collect` 时，会优先选择与当前 `collector` 同名的 `transformer`。如果没有同名 `transformer`，才会回退到默认的第一个 `transformer`。这样像站点专用插件就可以在自动发现后直接接管自己的解析流程，而不用手工调整顺序。
 
@@ -129,7 +129,7 @@ npm install clipper-cli clipper-plugin-weixin
 安装后，`clipper-plugin-weixin` 会像其他插件一样被自动发现。对于 `mp.weixin.qq.com/s` 文章链接，宿主会自动命中 `weixin` collector，并优先使用与当前 `collector` 同名的 `transformer` 来完成正文提取、OG 元数据整理、站内文章链接抽取和 Markdown 转换。
 
 ```bash
-clipper collect "https://mp.weixin.qq.com/s?__biz=example" --publisher markdown --output ./notes
+clipper-cli collect "https://mp.weixin.qq.com/s?__biz=example" --publisher markdown --output ./notes
 ```
 
 这条链路的目标是替代原来的 `fetch.js` 单体执行流程，但输出会落到标准 `ClipperDocument` 结构和现有发布器体系中。

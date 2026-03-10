@@ -4,7 +4,8 @@ import { describe, expect, it } from 'vitest'
 describe('readme', () => {
   it('documents the collect command', () => {
     const readme = readFileSync('README.md', 'utf8')
-    expect(readme).toContain('clipper collect <url>')
+    expect(readme).toContain('clipper-cli collect <url>')
+    expect(readme).toContain('clipper-cli publish <input>')
   })
 
   it('documents plugin auto-discovery workflow', () => {
@@ -13,7 +14,7 @@ describe('readme', () => {
     expect(readme).toContain('clipper.plugin')
     expect(readme).toContain('file:')
     expect(readme).toContain('workspace')
-    expect(readme).toContain('clipper plugins')
+    expect(readme).toContain('clipper-cli plugins')
   })
 
   it('documents the weixin plugin workflow', () => {

@@ -31,6 +31,17 @@ describe('cli action binding', () => {
     expect(mode & 0o111).not.toBe(0)
   })
 
+  it('prints built-in help for the clipper-cli executable name', () => {
+    const binaryPath = fileURLToPath(new URL('../../packages/clipper-cli/dist/cli/index.js', import.meta.url))
+
+    const output = execFileSync(process.execPath, [binaryPath, '--help'], {
+      encoding: 'utf8'
+    })
+
+    expect(output).toContain('Usage: clipper-cli')
+    expect(output).toContain('collect')
+  })
+
   it('runs collect action and writes markdown output', async () => {
     const outputDir = mkdtempSync(join(tmpdir(), 'clipper-cli-'))
 

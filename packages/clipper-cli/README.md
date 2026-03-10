@@ -21,9 +21,9 @@ npm install clipper-cli
 ## Usage
 
 ```bash
-clipper collect <url> --publisher markdown --output ./notes
-clipper collect <url> --publisher obsidian --output ./vault --debug
-clipper publish ./document.json --publisher markdown --output ./notes
-clipper plugins
-clipper plugins --verbose
+clipper-cli collect <url> --publisher markdown --output ./notes
+clipper-cli collect <url> --publisher obsidian --output ./vault --debug
+clipper-cli publish ./document.json --publisher markdown --output ./notes
+clipper-cli plugins
+clipper-cli plugins --verbose
 ```
