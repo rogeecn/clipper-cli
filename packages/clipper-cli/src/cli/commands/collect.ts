@@ -5,6 +5,7 @@ import { fetchHtml } from '../../core/fetcher.js'
 import { resolveRuntimeConfig } from '../../core/config.js'
 import { runWithPlaywright } from '../../core/playwright.js'
 import { writeDebugArtifacts } from '../../core/debug.js'
+import { buildDebugDocument } from '../../core/debug-metadata.js'
 
 export interface CollectOptions {
   url: string
@@ -26,10 +27,36 @@ export async function runCollectCommand(options: CollectOptions) {
     throw new Error('Missing runtime plugins')
   }
 
+  const requestOptions = collector.buildClientOptions?.({
+    input: {
+      url: options.url,
+      outputDir: options.output,
+      publisher: publisher.name,
+      debug: options.debug,
+      configPath: options.config
+    },
+    runtime: {
+      debug: options.debug ?? false,
+      cwd: options.cwd ?? process.cwd()
+    },
+    request: {},
+    response: {},
+    client: {},
+    artifacts: {}
+  }) ?? {}
+
   const context = await runPipeline({
     url: options.url,
+    outputDir: options.output,
+    configPath: options.config,
+    debug: options.debug,
+    cwd: options.cwd,
     collector,
-    requestRunner: () => performRequest({ url: options.url, fetcher: fetchHtml }),
+    requestRunner: () => performRequest({
+      url: options.url,
+      ...(requestOptions as Record<string, unknown>),
+      fetcher: fetchHtml
+    }),
     clientRunner: runWithPlaywright,
     transformer,
     publisher
@@ -46,14 +73,16 @@ export async function runCollectCommand(options: CollectOptions) {
     document
   })
 
+  const debugDocument = buildDebugDocument(document, context)
+
   const debugDir = options.debug
     ? await writeDebugArtifacts({
         cwd: options.cwd ?? process.cwd(),
-        request: { url: options.url },
+        request: context.request,
         response: context.response,
         rawHtml: context.artifacts.rawHtml,
         cleanedHtml: context.artifacts.cleanedHtml ?? document.content.html,
-        document,
+        document: debugDocument,
         screenshot: context.artifacts.screenshot
       })
     : undefined

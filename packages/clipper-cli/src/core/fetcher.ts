@@ -1,5 +1,18 @@
-export async function fetchHtml(url: string): Promise<{ status: number; headers: Record<string, string>; body: string }> {
-  const response = await fetch(url)
+import type { RequestResult, RequestSnapshot } from './request.js'
+
+export async function fetchHtml(input: RequestSnapshot): Promise<RequestResult> {
+  const response = await fetch(input.url, {
+    method: input.method,
+    headers: input.headers,
+    body: input.body,
+    redirect: input.redirect,
+    referrer: input.referrer,
+    referrerPolicy: input.referrerPolicy,
+    mode: input.mode,
+    credentials: input.credentials,
+    cache: input.cache,
+    integrity: input.integrity
+  })
   const body = await response.text()
   const headers: Record<string, string> = {}
 
@@ -8,7 +21,12 @@ export async function fetchHtml(url: string): Promise<{ status: number; headers:
   })
 
   return {
+    request: input,
+    url: response.url,
     status: response.status,
+    statusText: response.statusText,
+    ok: response.ok,
+    redirected: response.redirected,
     headers,
     body
   }
