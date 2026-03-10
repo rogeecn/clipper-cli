@@ -15,6 +15,26 @@ Publishable plugin package that provides a `weixin` collector and transformer fo
 - `pnpm --filter clipper-plugin-weixin test tests/package-metadata.test.ts`
 - `pnpm --filter clipper-plugin-weixin build`
 
+## Local Link Workflow
+
+When testing this plugin locally with `clipper-cli`, use the project-level link flow:
+
+```bash
+# In this package directory
+npm link
+pnpm --filter clipper-plugin-weixin build
+
+# In the project where you run clipper
+npm link clipper-plugin-weixin
+clipper plugins --verbose
+```
+
+Important notes:
+
+- Running only `npm link` in this plugin directory creates a global npm link, but does not make another project depend on the plugin yet.
+- `clipper-cli` discovers plugins from the current project's dependency tree, so the consuming project must also run `npm link clipper-plugin-weixin`.
+- This package exports `./dist/index.js`, so build it before checking `clipper plugins` or running `clipper collect`.
+
 ## Publish Verification
 
 Before publishing, verify the package metadata and packed entrypoints stay honest:

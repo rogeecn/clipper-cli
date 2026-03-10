@@ -1,6 +1,8 @@
+import { execFileSync } from 'node:child_process'
 import { mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { buildCli } from '../../packages/clipper-cli/src/cli/index.js'
 
@@ -11,6 +13,16 @@ afterEach(() => {
 })
 
 describe('cli action binding', () => {
+  it('executes commands when used through the built binary entry', () => {
+    const binaryPath = fileURLToPath(new URL('../../packages/clipper-cli/dist/cli/index.js', import.meta.url))
+
+    const output = execFileSync(process.execPath, [binaryPath, 'plugins'], {
+      encoding: 'utf8'
+    })
+
+    expect(output).toContain('"publishers"')
+  })
+
   it('runs collect action and writes markdown output', async () => {
     const outputDir = mkdtempSync(join(tmpdir(), 'clipper-cli-'))
 

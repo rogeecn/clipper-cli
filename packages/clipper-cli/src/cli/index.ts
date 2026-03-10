@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { pathToFileURL } from 'node:url'
 import { Command } from 'commander'
 import { runCollectCommand } from './commands/collect.js'
 import { runPublishCommand } from './commands/publish.js'
@@ -48,6 +49,10 @@ export function buildCli() {
     })
 
   return program
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  void buildCli().parseAsync(process.argv)
 }
 
 export {}

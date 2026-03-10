@@ -100,6 +100,20 @@ export default {
 - workspace 依赖
 - `npm link clipper-plugin-local`
 
+如果你走 `npm link` 工作流，注意它是两步：
+
+```bash
+# 在插件目录里注册全局 link
+npm link
+
+# 在实际运行 clipper 的项目目录里把插件 link 进当前项目
+npm link clipper-plugin-local
+```
+
+仅在插件目录里执行一次 `npm link` 还不够；`clipper` 只会发现“当前项目依赖树里可见”的插件，不会把全局 link 自动当作当前项目插件。
+
+另外，插件包需要先产出可导入的构建结果（例如 `dist/index.js`）。如果插件入口指向 `dist`，记得先运行对应的构建命令，再执行 `clipper plugins` 或 `clipper collect`。
+
 可以通过 `clipper plugins` 查看已加载插件；排查问题时使用 `clipper plugins --verbose` 查看发现和加载诊断。
 
 宿主在执行 `collect` 时，会优先选择与当前 `collector` 同名的 `transformer`。如果没有同名 `transformer`，才会回退到默认的第一个 `transformer`。这样像站点专用插件就可以在自动发现后直接接管自己的解析流程，而不用手工调整顺序。

@@ -1,3 +1,6 @@
+import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { discoverPlugins } from '../../packages/clipper-cli/src/core/config.js'
@@ -29,6 +32,28 @@ describe('plugin discovery', () => {
     const result = await discoverPlugins({ cwd: fixtureBrokenCwd, load: true })
 
     expect(result.diagnostics.some((item) => item.packageName === 'clipper-plugin-broken' && item.status === 'failed')).toBe(true)
+  })
+
+  it('discovers a project-level linked clipper-plugin-weixin dependency from node_modules', async () => {
+    const projectDir = mkdtempSync(join(tmpdir(), 'clipper-linked-plugin-'))
+    const linkedModulesDir = join(projectDir, 'node_modules')
+    const linkedPluginPath = join(linkedModulesDir, 'clipper-plugin-weixin')
+
+    mkdirSync(linkedModulesDir, { recursive: true })
+    writeFileSync(join(projectDir, 'package.json'), JSON.stringify({
+      name: 'linked-plugin-app',
+      private: true,
+      dependencies: {
+        'clipper-plugin-weixin': '^0.1.0'
+      }
+    }, null, 2))
+    symlinkSync(workspaceWeixinPath, linkedPluginPath, 'dir')
+
+    const result = await discoverPlugins({ cwd: projectDir })
+    const weixinPlugin = result.discovered.find((plugin) => plugin.packageName === 'clipper-plugin-weixin')
+
+    expect(weixinPlugin?.packagePath).toBe(workspaceWeixinPath)
+    expect(result.discovered.map((plugin) => plugin.packageName)).toContain('clipper-plugin-weixin')
   })
 
   it('loads the local fixture plugin publisher contribution', async () => {
