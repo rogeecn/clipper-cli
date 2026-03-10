@@ -47,7 +47,7 @@
     "clipper-cli": "^0.1.0"
   },
   "devDependencies": {
-    "clipper-cli": "workspace:*",
+    "clipper-cli": "file:../clipper-cli",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.13.10",
     "@types/turndown": "^5.0.5",

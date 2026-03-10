@@ -26,4 +26,13 @@ describe('clipper-plugin-weixin package publish settings', () => {
       entry: './dist/index.js'
     })
   })
+
+  it('does not declare npm-incompatible workspace protocol dependencies', () => {
+    const dependencySections = ['dependencies', 'peerDependencies', 'optionalDependencies', 'devDependencies'] as const
+
+    for (const section of dependencySections) {
+      const entries = (packageJson[section] as Record<string, string> | undefined) ?? {}
+      expect(Object.values(entries).some((value) => value.startsWith('workspace:'))).toBe(false)
+    }
+  })
 })

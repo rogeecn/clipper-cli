@@ -40,7 +40,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "node -e \"import('node:fs').then(({ rmSync }) => rmSync('dist', { recursive: true, force: true }))\" && tsc -p tsconfig.build.json",
+    "build": "node -e \"import('node:fs').then(({ chmodSync, rmSync }) => { rmSync('dist', { recursive: true, force: true }) })\" && tsc -p tsconfig.build.json && node -e \"import('node:fs').then(({ chmodSync }) => chmodSync('dist/cli/index.js', 0o755))\"",
     "test": "pnpm --filter clipper-plugin-weixin build && pnpm run build && vitest run --config vitest.config.ts",
     "test:task3": "pnpm --filter clipper-plugin-weixin build && pnpm run build && vitest run --config vitest.task3.config.ts"
   },

@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, readFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { buildCli } from '../../packages/clipper-cli/src/cli/index.js'
 
 const fixtureBrokenCwd = new URL('../fixtures/discovery-broken-app', import.meta.url).pathname
+const fixtureDiscoveryCwd = new URL('../fixtures/discovery-app', import.meta.url).pathname
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -21,6 +22,13 @@ describe('cli action binding', () => {
     })
 
     expect(output).toContain('"publishers"')
+  })
+
+  it('builds an executable CLI entry for the global clipper symlink target', () => {
+    const binaryPath = fileURLToPath(new URL('../../packages/clipper-cli/dist/cli/index.js', import.meta.url))
+    const mode = statSync(binaryPath).mode
+
+    expect(mode & 0o111).not.toBe(0)
   })
 
   it('runs collect action and writes markdown output', async () => {

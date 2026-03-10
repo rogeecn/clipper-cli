@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { pathToFileURL } from 'node:url'
+import { realpathSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { runCollectCommand } from './commands/collect.js'
 import { runPublishCommand } from './commands/publish.js'
@@ -8,6 +9,18 @@ import { listPlugins } from './commands/plugins.js'
 
 function writeJsonLine(value: unknown) {
   process.stdout.write(`${JSON.stringify(value)}\n`)
+}
+
+function isCliEntrypoint() {
+  if (!process.argv[1]) {
+    return false
+  }
+
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))
+  } catch {
+    return false
+  }
 }
 
 export function buildCli() {
@@ -51,7 +64,7 @@ export function buildCli() {
   return program
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (isCliEntrypoint()) {
   void buildCli().parseAsync(process.argv)
 }
 
