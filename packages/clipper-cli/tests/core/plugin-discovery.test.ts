@@ -18,6 +18,11 @@ describe('plugin discovery', () => {
     const result = await discoverPlugins({ cwd: fixtureCwd, load: true })
     const weixinPlugin = result.loaded.find((plugin) => plugin.packageName === 'clipper-plugin-weixin')
 
+    expect(result.diagnostics).not.toContainEqual(expect.objectContaining({
+      packageName: 'clipper-plugin-weixin',
+      stage: 'resolve',
+      status: 'failed'
+    }))
     expect(weixinPlugin?.pluginName).toBe('clipper-plugin-weixin')
     expect(weixinPlugin?.collectors.map((item) => item.name)).toContain('weixin')
     expect(weixinPlugin?.transformers.map((item) => item.name)).toContain('weixin')

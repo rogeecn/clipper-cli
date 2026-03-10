@@ -75,8 +75,8 @@ async function readJsonFile<T>(filePath: string): Promise<T> {
 }
 
 async function resolvePackageManifestPath(cwd: string, packageName: string, specifier?: string): Promise<string> {
-  if (specifier?.startsWith('file:')) {
-    const dependencyPath = specifier.slice('file:'.length)
+  if (specifier?.startsWith('file:') || specifier?.startsWith('link:')) {
+    const dependencyPath = specifier.slice(specifier.indexOf(':') + 1)
     const manifestPath = resolve(cwd, dependencyPath, 'package.json')
     const manifest = await readJsonFile<Record<string, unknown>>(manifestPath)
 

@@ -35,6 +35,10 @@ const WEIXIN_BROWSER_HEADERS = {
 
 const WEIXIN_REQUEST_TIMEOUT = 30000
 
+function isWeixinArticleUrl(url: URL): boolean {
+  return url.hostname === 'mp.weixin.qq.com' && (url.pathname === '/s' || url.pathname.startsWith('/s/'))
+}
+
 function parseWeixinArticle(html = ''): ParsedWeixinArticle | null {
   const dom = new JSDOM(html)
   const document = dom.window.document
@@ -118,7 +122,7 @@ function parseWeixinArticle(html = ''): ParsedWeixinArticle | null {
     }
   })
 
-  const contentHtml = body.innerHTML
+  let contentHtml = body.innerHTML
   const links: Array<{ title: string; link: string }> = []
   const contentDom = new JSDOM(contentHtml)
 
@@ -127,7 +131,7 @@ function parseWeixinArticle(html = ''): ParsedWeixinArticle | null {
       const href = element.getAttribute('href')
       const url = new URL(href ?? '', 'https://mp.weixin.qq.com')
 
-      if (url.hostname === 'mp.weixin.qq.com' && url.pathname === '/s') {
+      if (isWeixinArticleUrl(url)) {
         links.push({
           title: element.textContent?.trim() ?? '',
           link: url.toString()
@@ -142,6 +146,9 @@ function parseWeixinArticle(html = ''): ParsedWeixinArticle | null {
 
   const turndownService = new TurndownService()
 
+  // remove nbsp space
+  contentHtml = contentHtml.replaceAll('&nbsp;', ' ').replaceAll('\u00a0', ' ')
+
   return {
     meta,
     contentHtml,
@@ -152,7 +159,7 @@ function parseWeixinArticle(html = ''): ParsedWeixinArticle | null {
 export const weixinCollector: CollectorPlugin = {
   name: 'weixin',
   match(url) {
-    return url.hostname === 'mp.weixin.qq.com' && url.pathname === '/s'
+    return isWeixinArticleUrl(url)
   },
   buildClientOptions(ctx) {
     return {

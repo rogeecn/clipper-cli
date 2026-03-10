@@ -5,15 +5,15 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  clipper-plugin-weixin: link:../../.local/share/pnpm/global/5/node_modules/clipper-plugin-weixin
+  clipper-plugin-weixin: link:packages/clipper-plugin-weixin
 
 importers:
 
   .:
     dependencies:
       clipper-plugin-weixin:
-        specifier: link:../../.local/share/pnpm/global/5/node_modules/clipper-plugin-weixin
-        version: link:../../.local/share/pnpm/global/5/node_modules/clipper-plugin-weixin
+        specifier: link:packages/clipper-plugin-weixin
+        version: link:packages/clipper-plugin-weixin
     devDependencies:
       '@types/jsdom':
         specifier: ^21.1.7

@@ -52,8 +52,9 @@ describe('clipper-plugin-weixin', () => {
     })
   })
 
-  it('matches only weixin article urls', () => {
+  it('matches weixin article urls for both query and path forms', () => {
     expect(weixinCollector.match(new URL('https://mp.weixin.qq.com/s?__biz=fixture-article'))).toBe(true)
+    expect(weixinCollector.match(new URL('https://mp.weixin.qq.com/s/fixture-article'))).toBe(true)
     expect(weixinCollector.match(new URL('https://mp.weixin.qq.com/mp/profile_ext?action=home'))).toBe(false)
     expect(weixinCollector.match(new URL('https://example.com/s?__biz=fixture-article'))).toBe(false)
   })

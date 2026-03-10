@@ -40,10 +40,10 @@
   },
   "pnpm": {
     "overrides": {
-      "clipper-plugin-weixin": "link:../../.local/share/pnpm/global/5/node_modules/clipper-plugin-weixin"
+      "clipper-plugin-weixin": "link:packages/clipper-plugin-weixin"
     }
   },
   "dependencies": {
-    "clipper-plugin-weixin": "link:../../.local/share/pnpm/global/5/node_modules/clipper-plugin-weixin"
+    "clipper-plugin-weixin": "link:packages/clipper-plugin-weixin"
   }
 }
