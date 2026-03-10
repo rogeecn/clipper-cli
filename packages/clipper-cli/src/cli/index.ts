@@ -25,7 +25,7 @@ function isCliEntrypoint() {
 
 export function buildCli() {
   const program = new Command()
-  program.name('clipper')
+  program.name('clipper-cli')
 
   program
     .command('collect <url>')
