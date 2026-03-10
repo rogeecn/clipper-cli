@@ -21,7 +21,35 @@ describe('clipper-plugin-weixin', () => {
       publishers: []
     })
 
-    expect(typeof typedPlugin.collectors[0].buildClientOptions).toBe('undefined')
+    expect(typeof typedPlugin.collectors[0].buildClientOptions).toBe('function')
+  })
+
+  it('builds browser-like request options for weixin article fetches', () => {
+    const options = weixinCollector.buildClientOptions?.({
+      input: { url: 'https://mp.weixin.qq.com/s?__biz=fixture-article' }
+    } as never)
+
+    expect(options).toMatchObject({
+      timeout: 30000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Cache-Control': 'max-age=0',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-CH-UA': '"Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"',
+        'Sec-CH-UA-Mobile': '?0',
+        'Sec-CH-UA-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Priority': 'u=0, i',
+        'Cookie': 'rewardsn=; wxtokenkey=777',
+        'Referer': 'https://mp.weixin.qq.com/s?__biz=fixture-article'
+      }
+    })
   })
 
   it('matches only weixin article urls', () => {

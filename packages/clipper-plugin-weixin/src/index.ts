@@ -15,6 +15,26 @@ interface ParsedWeixinArticle {
   markdown: string
 }
 
+const WEIXIN_BROWSER_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+  'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'Cache-Control': 'max-age=0',
+  'Upgrade-Insecure-Requests': '1',
+  'Sec-CH-UA': '"Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"',
+  'Sec-CH-UA-Mobile': '?0',
+  'Sec-CH-UA-Platform': '"Windows"',
+  'Sec-Fetch-Dest': 'document',
+  'Sec-Fetch-Mode': 'navigate',
+  'Sec-Fetch-Site': 'none',
+  'Sec-Fetch-User': '?1',
+  'Priority': 'u=0, i',
+  'Cookie': 'rewardsn=; wxtokenkey=777'
+} as const
+
+const WEIXIN_REQUEST_TIMEOUT = 30000
+
 function parseWeixinArticle(html = ''): ParsedWeixinArticle | null {
   const dom = new JSDOM(html)
   const document = dom.window.document
@@ -133,6 +153,15 @@ export const weixinCollector: CollectorPlugin = {
   name: 'weixin',
   match(url) {
     return url.hostname === 'mp.weixin.qq.com' && url.pathname === '/s'
+  },
+  buildClientOptions(ctx) {
+    return {
+      timeout: WEIXIN_REQUEST_TIMEOUT,
+      headers: {
+        ...WEIXIN_BROWSER_HEADERS,
+        Referer: ctx.input.url
+      }
+    }
   },
   shouldFallback(result) {
     if (result.status !== 200) {
