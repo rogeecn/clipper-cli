@@ -1,0 +1,67 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    # Skip if the commit was made by this workflow (version bump commit)
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history so we can push back
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.6.5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Configure git for version bump commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version and publish clipper-cli
+        working-directory: packages/clipper-cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm version patch --no-git-tag-version
+          npm publish --access public
+
+      - name: Bump version and publish clipper-plugin-weixin
+        working-directory: packages/clipper-plugin-weixin
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm version patch --no-git-tag-version
+          npm publish --access public
+
+      - name: Commit version bumps back to main
+        run: |
+          git add packages/clipper-cli/package.json packages/clipper-plugin-weixin/package.json
+          git commit -m "chore: bump package versions [skip ci]"
+          git push
