@@ -114,6 +114,26 @@ npm link clipper-plugin-local
 
 另外，插件包需要先产出可导入的构建结果（例如 `dist/index.js`）。如果插件入口指向 `dist`，记得先运行对应的构建命令，再执行 `clipper-cli plugins` 或 `clipper-cli collect`。
 
+**方式一：全局安装（推荐的生产用法）**
+
+```bash
+npm i -g clipper-cli
+npm i -g clipper-plugin-weixin
+clipper-cli plugins  # 可以看到 weixin 采集器
+```
+
+全局安装的插件（`npm i -g`）会被自动发现，无需额外配置。
+
+**方式二：在插件目录中开发**
+
+在插件包根目录（`package.json` 名称匹配 `clipper-plugin-*`）下直接运行 `clipper-cli`，CLI 会将当前目录自动识别为插件：
+
+```bash
+cd packages/clipper-plugin-weixin
+pnpm run build
+clipper-cli plugins  # 自动识别当前目录为插件
+```
+
 可以通过 `clipper-cli plugins` 查看已加载插件；排查问题时使用 `clipper-cli plugins --verbose` 查看发现和加载诊断。
 
 宿主在执行 `collect` 时，会优先选择与当前 `collector` 同名的 `transformer`。如果没有同名 `transformer`，才会回退到默认的第一个 `transformer`。这样像站点专用插件就可以在自动发现后直接接管自己的解析流程，而不用手工调整顺序。
