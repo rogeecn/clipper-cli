@@ -294,7 +294,12 @@ async function loadDiscoveredPlugins(discovered: DiscoveredPlugin[]): Promise<{ 
 export async function discoverPlugins(options: { cwd?: string; load?: boolean; globalNodeModulesPath?: string } = {}): Promise<PluginDiscoveryResult> {
   const cwd = options.cwd ?? process.cwd()
   const rootPackagePath = join(cwd, 'package.json')
-  const rootPackageJson = await readJsonFile<Record<string, unknown>>(rootPackagePath)
+  let rootPackageJson: Record<string, unknown> = {}
+  try {
+    rootPackageJson = await readJsonFile<Record<string, unknown>>(rootPackagePath)
+  } catch {
+    // cwd has no package.json — skip project-dependency discovery, continue to self and global phases
+  }
   const dependencyEntries = getDependencyEntries(rootPackageJson)
   const diagnostics: PluginDiagnostic[] = []
   const discovered: DiscoveredPlugin[] = []

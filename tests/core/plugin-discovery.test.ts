@@ -86,6 +86,19 @@ describe('plugin discovery', () => {
     expect(weixinPlugin?.transformers.map((t) => t.name)).toContain('weixin')
   })
 
+  it('discovers global plugins even when cwd has no package.json', async () => {
+    const fakeGlobalDir = mkdtempSync(join(tmpdir(), 'clipper-global-nopkg-'))
+    const fakePluginPath = join(fakeGlobalDir, 'clipper-plugin-weixin')
+    symlinkSync(workspaceWeixinPath, fakePluginPath, 'dir')
+
+    // cwd with NO package.json at all
+    const emptyCwd = mkdtempSync(join(tmpdir(), 'clipper-nopkg-'))
+
+    const result = await discoverPlugins({ cwd: emptyCwd, globalNodeModulesPath: fakeGlobalDir })
+
+    expect(result.discovered.map((p) => p.packageName)).toContain('clipper-plugin-weixin')
+  })
+
   it('discovers plugins installed in the global node_modules', async () => {
     const fakeGlobalDir = mkdtempSync(join(tmpdir(), 'clipper-global-'))
     const fakePluginPath = join(fakeGlobalDir, 'clipper-plugin-weixin')
