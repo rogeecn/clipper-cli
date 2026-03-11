@@ -85,4 +85,46 @@ describe('plugin discovery', () => {
     expect(weixinPlugin?.collectors.map((c) => c.name)).toContain('weixin')
     expect(weixinPlugin?.transformers.map((t) => t.name)).toContain('weixin')
   })
+
+  it('discovers plugins installed in the global node_modules', async () => {
+    const fakeGlobalDir = mkdtempSync(join(tmpdir(), 'clipper-global-'))
+    const fakePluginPath = join(fakeGlobalDir, 'clipper-plugin-weixin')
+    symlinkSync(workspaceWeixinPath, fakePluginPath, 'dir')
+
+    const emptyCwd = mkdtempSync(join(tmpdir(), 'clipper-empty-'))
+    writeFileSync(join(emptyCwd, 'package.json'), JSON.stringify({ name: 'empty-app', private: true }))
+
+    const result = await discoverPlugins({ cwd: emptyCwd, globalNodeModulesPath: fakeGlobalDir })
+
+    expect(result.discovered.map((p) => p.packageName)).toContain('clipper-plugin-weixin')
+  })
+
+  it('loads plugin collectors and transformers from global node_modules', async () => {
+    const fakeGlobalDir = mkdtempSync(join(tmpdir(), 'clipper-global-load-'))
+    const fakePluginPath = join(fakeGlobalDir, 'clipper-plugin-weixin')
+    symlinkSync(workspaceWeixinPath, fakePluginPath, 'dir')
+
+    const emptyCwd = mkdtempSync(join(tmpdir(), 'clipper-empty-load-'))
+    writeFileSync(join(emptyCwd, 'package.json'), JSON.stringify({ name: 'empty-app', private: true }))
+
+    const result = await discoverPlugins({ cwd: emptyCwd, load: true, globalNodeModulesPath: fakeGlobalDir })
+    const weixinPlugin = result.loaded.find((p) => p.packageName === 'clipper-plugin-weixin')
+
+    expect(weixinPlugin?.collectors.map((c) => c.name)).toContain('weixin')
+  })
+
+  it('discovers scoped clipper plugins from global node_modules', async () => {
+    const fakeGlobalDir = mkdtempSync(join(tmpdir(), 'clipper-global-scoped-'))
+    const scopeDir = join(fakeGlobalDir, '@myscope')
+    mkdirSync(scopeDir, { recursive: true })
+    const fakePluginPath = join(scopeDir, 'clipper-plugin-weixin')
+    symlinkSync(workspaceWeixinPath, fakePluginPath, 'dir')
+
+    const emptyCwd = mkdtempSync(join(tmpdir(), 'clipper-empty-scoped-'))
+    writeFileSync(join(emptyCwd, 'package.json'), JSON.stringify({ name: 'empty-app', private: true }))
+
+    const result = await discoverPlugins({ cwd: emptyCwd, globalNodeModulesPath: fakeGlobalDir })
+
+    expect(result.discovered.map((p) => p.packageName)).toContain('@myscope/clipper-plugin-weixin')
+  })
 })

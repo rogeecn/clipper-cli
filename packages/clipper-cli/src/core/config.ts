@@ -1,3 +1,6 @@
+import { execSync } from 'node:child_process'
+import { readdirSync } from 'node:fs'
+import type { Dirent } from 'node:fs'
 import { access, readFile, realpath } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -23,6 +26,49 @@ const DEFAULT_DISCOVERY_RESULT: PluginDiscoveryResult = {
 
 export function defineConfig(config: RuntimeConfig): RuntimeConfig {
   return config
+}
+
+function getGlobalNodeModulesPath(): string | undefined {
+  try {
+    const result = execSync('npm root -g', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
+    return result.trim()
+  } catch {
+    return undefined
+  }
+}
+
+function collectGlobalCandidates(globalNodeModules: string): Array<{ packageName: string; manifestPath: string }> {
+  const results: Array<{ packageName: string; manifestPath: string }> = []
+  let entries: Dirent[]
+  try {
+    entries = readdirSync(globalNodeModules, { withFileTypes: true })
+  } catch {
+    return results
+  }
+  for (const entry of entries) {
+    if (!entry.isDirectory() && !entry.isSymbolicLink()) continue
+    if (entry.name.startsWith('@')) {
+      // scoped packages live under @scope/package-name
+      try {
+        const scopeEntries = readdirSync(join(globalNodeModules, entry.name), { withFileTypes: true })
+        for (const scopedEntry of scopeEntries) {
+          if (!scopedEntry.isDirectory() && !scopedEntry.isSymbolicLink()) continue
+          results.push({
+            packageName: `${entry.name}/${scopedEntry.name}`,
+            manifestPath: join(globalNodeModules, entry.name, scopedEntry.name, 'package.json')
+          })
+        }
+      } catch {
+        // skip unreadable scoped dirs
+      }
+    } else {
+      results.push({
+        packageName: entry.name,
+        manifestPath: join(globalNodeModules, entry.name, 'package.json')
+      })
+    }
+  }
+  return results
 }
 
 export async function findConfig(cwd: string): Promise<string | undefined> {
@@ -245,7 +291,7 @@ async function loadDiscoveredPlugins(discovered: DiscoveredPlugin[]): Promise<{ 
   return { loaded, diagnostics }
 }
 
-export async function discoverPlugins(options: { cwd?: string; load?: boolean } = {}): Promise<PluginDiscoveryResult> {
+export async function discoverPlugins(options: { cwd?: string; load?: boolean; globalNodeModulesPath?: string } = {}): Promise<PluginDiscoveryResult> {
   const cwd = options.cwd ?? process.cwd()
   const rootPackagePath = join(cwd, 'package.json')
   const rootPackageJson = await readJsonFile<Record<string, unknown>>(rootPackagePath)
@@ -311,6 +357,38 @@ export async function discoverPlugins(options: { cwd?: string; load?: boolean } 
     }
   } catch {
     // cwd has no package.json or it is not readable — ignore
+  }
+
+  // Phase 3: global node_modules discovery
+  const globalNodeModules = options.globalNodeModulesPath ?? getGlobalNodeModulesPath()
+  if (globalNodeModules) {
+    const candidates = collectGlobalCandidates(globalNodeModules)
+    for (const { packageName, manifestPath } of candidates) {
+      const alreadyDiscovered = discovered.some((d) => d.packageName === packageName)
+      if (alreadyDiscovered) continue
+      try {
+        const packageJson = await readJsonFile<Record<string, unknown>>(manifestPath)
+        // For scoped packages the entry name is @scope/pkg but manifest.name may differ — skip name mismatch only for non-scoped
+        if (!packageName.startsWith('@') && typeof packageJson.name === 'string' && packageJson.name !== packageName) continue
+        const manifest = toManifest(packageJson, packageName)
+        if (!manifest) continue
+        const resolvedManifestPath = await realpath(manifestPath)
+        discovered.push({
+          packageName,
+          packagePath: dirname(resolvedManifestPath),
+          manifestPath: resolvedManifestPath,
+          manifest
+        })
+        diagnostics.push({
+          packageName,
+          stage: 'manifest',
+          status: 'discovered',
+          message: 'plugin manifest discovered (global)'
+        })
+      } catch {
+        // not a valid package, skip
+      }
+    }
   }
 
   if (!options.load) {
