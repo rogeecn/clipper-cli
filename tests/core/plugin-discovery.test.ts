@@ -71,4 +71,18 @@ describe('plugin discovery', () => {
     expect(conditionalPlugin?.pluginName).toBe('clipper-plugin-conditional')
     expect(conditionalPlugin?.publishers.map((item) => item.name)).toContain('conditional-publisher')
   })
+
+  it('discovers the plugin when cwd is the plugin package root itself', async () => {
+    const result = await discoverPlugins({ cwd: workspaceWeixinPath })
+
+    expect(result.discovered.map((p) => p.packageName)).toContain('clipper-plugin-weixin')
+  })
+
+  it('loads collectors and transformers when cwd is the plugin package root', async () => {
+    const result = await discoverPlugins({ cwd: workspaceWeixinPath, load: true })
+    const weixinPlugin = result.loaded.find((p) => p.packageName === 'clipper-plugin-weixin')
+
+    expect(weixinPlugin?.collectors.map((c) => c.name)).toContain('weixin')
+    expect(weixinPlugin?.transformers.map((t) => t.name)).toContain('weixin')
+  })
 })

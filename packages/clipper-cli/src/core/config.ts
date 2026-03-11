@@ -285,6 +285,34 @@ export async function discoverPlugins(options: { cwd?: string; load?: boolean } 
     }
   }
 
+  // Phase 2: self-discovery — cwd itself may be a plugin package
+  const cwdManifestPath = join(cwd, 'package.json')
+  try {
+    const cwdPackageJson = await readJsonFile<Record<string, unknown>>(cwdManifestPath)
+    const cwdPackageName = typeof cwdPackageJson.name === 'string' ? cwdPackageJson.name : undefined
+    if (cwdPackageName) {
+      const selfManifest = toManifest(cwdPackageJson, cwdPackageName)
+      const alreadyDiscovered = discovered.some((d) => d.packageName === cwdPackageName)
+      if (selfManifest && !alreadyDiscovered) {
+        const resolvedManifestPath = await realpath(cwdManifestPath)
+        discovered.push({
+          packageName: cwdPackageName,
+          packagePath: dirname(resolvedManifestPath),
+          manifestPath: resolvedManifestPath,
+          manifest: selfManifest
+        })
+        diagnostics.push({
+          packageName: cwdPackageName,
+          stage: 'manifest',
+          status: 'discovered',
+          message: 'plugin manifest discovered (self)'
+        })
+      }
+    }
+  } catch {
+    // cwd has no package.json or it is not readable — ignore
+  }
+
   if (!options.load) {
     return {
       discovered,
