@@ -1,7 +1,7 @@
 import { resolveRuntimeConfigResult } from '../../core/config.js'
 
-export async function listPlugins(options: { cwd?: string; config?: string; verbose?: boolean } = {}) {
-  const runtimeConfig = await resolveRuntimeConfigResult({ cwd: options.cwd, configPath: options.config })
+export async function listPlugins(options: { cwd?: string; config?: string; verbose?: boolean; globalNodeModulesPath?: string } = {}) {
+  const runtimeConfig = await resolveRuntimeConfigResult({ cwd: options.cwd, configPath: options.config, globalNodeModulesPath: options.globalNodeModulesPath })
 
   return {
     collectors: runtimeConfig.collectors.map((plugin) => plugin.name),

@@ -50,4 +50,24 @@ describe('plugins list command', () => {
 
     expect(result.collectors).toContain('weixin')
   })
+
+  it('includes self-discovered weixin plugin when cwd is the plugin root', async () => {
+    const result = await listPlugins({ cwd: workspaceWeixinPath })
+
+    expect(result.collectors).toContain('weixin')
+    expect(result.transformers).toContain('weixin')
+  })
+
+  it('includes globally installed plugins in the plugins list', async () => {
+    const fakeGlobalDir = mkdtempSync(join(tmpdir(), 'clipper-global-cli-'))
+    const fakePluginPath = join(fakeGlobalDir, 'clipper-plugin-weixin')
+    symlinkSync(workspaceWeixinPath, fakePluginPath, 'dir')
+
+    const emptyCwd = mkdtempSync(join(tmpdir(), 'clipper-empty-cli-'))
+    writeFileSync(join(emptyCwd, 'package.json'), JSON.stringify({ name: 'empty-app', private: true }))
+
+    const result = await listPlugins({ cwd: emptyCwd, globalNodeModulesPath: fakeGlobalDir })
+
+    expect(result.collectors).toContain('weixin')
+  })
 })

@@ -407,10 +407,10 @@ export async function discoverPlugins(options: { cwd?: string; load?: boolean; g
   }
 }
 
-export async function resolveRuntimeConfigResult(options: { cwd?: string; configPath?: string } = {}): Promise<RuntimeConfigResolution> {
+export async function resolveRuntimeConfigResult(options: { cwd?: string; configPath?: string; globalNodeModulesPath?: string } = {}): Promise<RuntimeConfigResolution> {
   const cwd = options.cwd ?? process.cwd()
   const discoveredPath = options.configPath ?? await findConfig(cwd)
-  const discoveredPlugins = await discoverPlugins({ cwd, load: true }).catch(() => DEFAULT_DISCOVERY_RESULT)
+  const discoveredPlugins = await discoverPlugins({ cwd, load: true, globalNodeModulesPath: options.globalNodeModulesPath }).catch(() => DEFAULT_DISCOVERY_RESULT)
   const discoveredConfig: RuntimeConfig = {
     collectors: discoveredPlugins.loaded.flatMap((plugin) => plugin.collectors),
     transformers: discoveredPlugins.loaded.flatMap((plugin) => plugin.transformers),
@@ -440,7 +440,7 @@ export async function resolveRuntimeConfigResult(options: { cwd?: string; config
   }
 }
 
-export async function resolveRuntimeConfig(options: { cwd?: string; configPath?: string } = {}): Promise<RuntimeConfig> {
+export async function resolveRuntimeConfig(options: { cwd?: string; configPath?: string; globalNodeModulesPath?: string } = {}): Promise<RuntimeConfig> {
   const result = await resolveRuntimeConfigResult(options)
   return {
     collectors: result.collectors,
