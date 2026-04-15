@@ -1,6 +1,6 @@
 {
   "name": "clipper-plugin-weixin",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Weixin collector and transformer plugin for clipper-cli.",
   "type": "module",
   "license": "MIT",
