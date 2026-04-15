@@ -26,6 +26,7 @@ describe('collect command runtime', () => {
     expect(result.document.title).toBe('Hello')
     expect(result.output?.entryFile).toBeDefined()
     expect(readFileSync(result.output!.entryFile, 'utf8')).toContain('World')
+    expect(existsSync(result.output!.assetDir)).toBe(false)
   })
 
   it('writes markdown to stdout when output is omitted', async () => {
