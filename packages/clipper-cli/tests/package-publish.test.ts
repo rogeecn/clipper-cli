@@ -18,7 +18,7 @@ describe('clipper-cli package publish settings', () => {
       }
     })
     expect(packageJson.bin).toMatchObject({
-      clipper: './dist/cli/index.js'
+      'clipper-cli': './dist/cli/index.js'
     })
     expect(scripts?.build).toEqual(expect.stringContaining('rmSync'))
     expect(scripts?.build).toEqual(expect.stringContaining('tsc -p tsconfig.build.json'))

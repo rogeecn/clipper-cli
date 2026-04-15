@@ -1,3 +1,5 @@
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { createRegistry } from '../../core/registry.js'
 import { runPipeline } from '../../core/pipeline.js'
 import { performRequest } from '../../core/request.js'
@@ -6,24 +8,49 @@ import { resolveRuntimeConfig } from '../../core/config.js'
 import { runWithPlaywright } from '../../core/playwright.js'
 import { writeDebugArtifacts } from '../../core/debug.js'
 import { buildDebugDocument } from '../../core/debug-metadata.js'
+import { downloadAssets } from '../../core/assets.js'
+import type { ClipperDocument } from '../../types/document.js'
+import type { PublisherOutput, PublisherPlugin } from '../../types/plugin.js'
 
 export interface CollectOptions {
   url: string
   output?: string
+  format?: 'markdown' | 'json'
+  assets?: boolean
+  proxy?: string
   publisher?: string
   config?: string
   cwd?: string
   debug?: boolean
 }
 
+function createJsonOutput(outputDir: string, document: ClipperDocument): PublisherOutput {
+  return {
+    entryFile: join(outputDir, `${document.title}.json`),
+    assetDir: join(outputDir, 'assets')
+  }
+}
+
+function serializeCollectOutput(document: ClipperDocument, format: NonNullable<CollectOptions['format']>): string {
+  if (format === 'json') {
+    return JSON.stringify(document)
+  }
+
+  return document.content.markdown
+}
+
 export async function runCollectCommand(options: CollectOptions) {
+  const format = options.format ?? 'markdown'
   const runtimeConfig = await resolveRuntimeConfig({ cwd: options.cwd, configPath: options.config })
   const registry = createRegistry(runtimeConfig)
   const collector = registry.resolveCollectorPlugin(options.url)
   const transformer = collector ? registry.resolveTransformer(collector.name) ?? registry.resolveTransformer() : registry.resolveTransformer()
-  const publisher = registry.resolvePublisher(options.publisher)
+  const publisher: PublisherPlugin | null = options.output && format === 'markdown'
+    ? registry.resolvePublisher(options.publisher ?? 'markdown')
+    ?? null
+    : null
 
-  if (!collector || !transformer || !publisher) {
+  if (!collector || !transformer || (options.output && format === 'markdown' && !publisher)) {
     throw new Error('Missing runtime plugins')
   }
 
@@ -31,7 +58,10 @@ export async function runCollectCommand(options: CollectOptions) {
     input: {
       url: options.url,
       outputDir: options.output,
-      publisher: publisher.name,
+      publisher: publisher?.name,
+      format,
+      assets: options.assets ?? false,
+      proxy: options.proxy,
       debug: options.debug,
       configPath: options.config
     },
@@ -48,6 +78,9 @@ export async function runCollectCommand(options: CollectOptions) {
   const context = await runPipeline({
     url: options.url,
     outputDir: options.output,
+    format,
+    assets: options.assets ?? false,
+    proxy: options.proxy,
     configPath: options.config,
     debug: options.debug,
     cwd: options.cwd,
@@ -55,6 +88,7 @@ export async function runCollectCommand(options: CollectOptions) {
     requestRunner: () => performRequest({
       url: options.url,
       ...(requestOptions as Record<string, unknown>),
+      proxy: options.proxy,
       fetcher: fetchHtml
     }),
     clientRunner: runWithPlaywright,
@@ -68,10 +102,31 @@ export async function runCollectCommand(options: CollectOptions) {
     throw new Error('Pipeline did not produce a document')
   }
 
-  const output = await publisher.publish?.({
-    input: { outputDir: options.output },
-    document
-  })
+  let output: PublisherOutput | undefined
+
+  if (options.output) {
+    if (format === 'json') {
+      output = createJsonOutput(options.output, document)
+      await mkdir(options.output, { recursive: true })
+      await mkdir(output.assetDir, { recursive: true })
+      await writeFile(output.entryFile, serializeCollectOutput(document, format), 'utf8')
+    } else {
+      output = await publisher?.publish?.({
+        input: { outputDir: options.output },
+        document
+      })
+    }
+
+    if (options.assets && output) {
+      await downloadAssets({
+        assets: document.assets,
+        outputDir: output.assetDir,
+        proxy: options.proxy
+      })
+    }
+  } else {
+    process.stdout.write(serializeCollectOutput(document, format))
+  }
 
   const debugDocument = buildDebugDocument(document, context)
 

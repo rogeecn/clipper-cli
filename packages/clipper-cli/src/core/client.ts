@@ -2,6 +2,7 @@ export type WaitUntilOption = 'load' | 'domcontentloaded' | 'networkidle' | 'com
 
 export interface ClientOptions {
   url: string
+  proxy?: string
   waitUntil?: WaitUntilOption
   waitForSelector?: string
   [key: string]: unknown
@@ -27,12 +28,20 @@ interface BrowserInstance {
 }
 
 interface BrowserLauncher {
-  launch(): Promise<BrowserInstance>
+  launch(options?: { proxy?: { server: string } }): Promise<BrowserInstance>
 }
 
 export function createPlaywrightClientRunner(launcher: BrowserLauncher): ClientRunner {
   return async (options: ClientOptions) => {
-    const browser = await launcher.launch()
+    const browser = await launcher.launch(
+      options.proxy
+        ? {
+            proxy: {
+              server: options.proxy
+            }
+          }
+        : undefined
+    )
     const page = await browser.newPage()
 
     await page.goto(options.url, { waitUntil: options.waitUntil })

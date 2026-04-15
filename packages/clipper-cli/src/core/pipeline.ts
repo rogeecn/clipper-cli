@@ -7,6 +7,9 @@ import { buildDebugClientFallback, buildDebugPipeline, buildDebugRuntime } from 
 interface PipelineInput {
   url: string
   outputDir?: string
+  format?: 'markdown' | 'json'
+  assets?: boolean
+  proxy?: string
   configPath?: string
   debug?: boolean
   cwd?: string
@@ -23,6 +26,9 @@ function createContext(input: PipelineInput): ClipperContext {
       url: input.url,
       outputDir: input.outputDir,
       publisher: input.publisher?.name,
+      format: input.format,
+      assets: input.assets,
+      proxy: input.proxy,
       debug: input.debug,
       configPath: input.configPath
     },
@@ -73,7 +79,8 @@ export async function runPipeline(input: PipelineInput) {
   if (input.collector.shouldFallback?.(requestResult, ctx)) {
     const options = {
       url: input.url,
-      ...(input.collector.buildClientOptions?.(ctx) ?? {})
+      ...(input.collector.buildClientOptions?.(ctx) ?? {}),
+      proxy: ctx.input.proxy
     }
     const result = await input.clientRunner(options)
     ctx.client.usedFallback = true

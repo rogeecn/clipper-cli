@@ -29,14 +29,21 @@ export function buildCli() {
 
   program
     .command('collect <url>')
-    .option('-o, --output <dir>')
-    .option('-p, --publisher <name>', 'publisher name', 'markdown')
+    .option('-o, --output <path>')
+    .option('-f, --format <format>', 'output format', 'markdown')
+    .option('-a, --assets', 'download static assets')
+    .option('-p, --proxy <url>', 'proxy url for collection requests')
     .option('--debug', 'write debug artifacts')
-    .action(async (url: string, options: { output?: string; publisher?: string; debug?: boolean }) => {
+    .action(async (
+      url: string,
+      options: { output?: string; format?: 'markdown' | 'json'; assets?: boolean; proxy?: string; debug?: boolean }
+    ) => {
       await runCollectCommand({
         url,
         output: options.output,
-        publisher: options.publisher,
+        format: options.format,
+        assets: options.assets,
+        proxy: options.proxy,
         debug: options.debug
       })
     })

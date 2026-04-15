@@ -45,6 +45,9 @@ importers:
       turndown:
         specifier: ^7.2.0
         version: 7.2.2
+      undici:
+        specifier: ^8.1.0
+        version: 8.1.0
 
   packages/clipper-plugin-weixin:
     dependencies:
@@ -689,6 +692,10 @@ packages:
     resolution: {integrity: sha512-RqslV2Us5BrllB+JeiZnK4peryVTndy9Dnqq62S3yYRRTj0tFQCwEniUy2167skdGOy3vqRzEvl1Dm4sV2ReDg==}
     engines: {node: '>=20.18.1'}
 
+  undici@8.1.0:
+    resolution: {integrity: sha512-E9MkTS4xXLnRPYqxH2e6Hr2/49e7WFDKczKcCaFH4VaZs2iNvHMqeIkyUAD9vM8kujy9TjVrRlQ5KkdEJxB2pw==}
+    engines: {node: '>=22.19.0'}
+
   vite-node@2.1.9:
     resolution: {integrity: sha512-AM9aQ/IPrW/6ENLQg3AGY4K1N2TGZdR5e4gu/MmmR2xR3Ll1+dib+nook92g4TV3PXVyeyxdWwtaCAiUL0hMxA==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -1299,6 +1306,8 @@ snapshots:
   undici-types@7.22.0: {}
 
   undici@7.22.0: {}
+
+  undici@8.1.0: {}
 
   vite-node@2.1.9(@types/node@22.19.15):
     dependencies:

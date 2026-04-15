@@ -1,6 +1,7 @@
 export interface RequestSnapshot {
   url: string
   method: NonNullable<RequestInit['method']>
+  proxy?: string
   headers?: Record<string, string>
   body?: string
   redirect?: RequestInit['redirect']
@@ -30,6 +31,7 @@ export interface RequestResult extends ResponseSnapshot {
 export interface RequestInput {
   url: string
   method?: RequestInit['method']
+  proxy?: string
   headers?: Record<string, string>
   body?: string
   redirect?: RequestInit['redirect']
@@ -47,6 +49,7 @@ export async function performRequest(input: RequestInput): Promise<RequestResult
   const request: RequestSnapshot = {
     url: input.url,
     method: input.method ?? 'GET',
+    proxy: input.proxy,
     headers: input.headers,
     body: input.body,
     redirect: input.redirect,

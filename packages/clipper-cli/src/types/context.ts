@@ -6,7 +6,9 @@ export interface ClipperInput {
   publisher?: string
   plugin?: string
   debug?: boolean
-  format?: 'md' | 'json'
+  format?: 'markdown' | 'json'
+  assets?: boolean
+  proxy?: string
   fallback?: 'client'
   configPath?: string
 }
@@ -26,6 +28,7 @@ export interface ClipperArtifacts {
 export interface RequestState {
   url?: string
   method?: string
+  proxy?: string
   headers?: Record<string, string>
   body?: string
   redirect?: string
@@ -43,6 +46,9 @@ export interface RequestState {
       url?: string
       outputDir?: string
       publisher?: string
+      format?: 'markdown' | 'json'
+      assets?: boolean
+      proxy?: string
       configPath?: string
     }
   }

@@ -10,7 +10,7 @@ describe('clipper-cli package role', () => {
     expect(packageJson.private).not.toBe(true)
     expect(typeof bin).toBe('object')
     expect(bin).toMatchObject({
-      clipper: './dist/cli/index.js'
+      'clipper-cli': './dist/cli/index.js'
     })
     expect(packageJson.types).toBe('./dist/index.d.ts')
     expect(scripts).toMatchObject({

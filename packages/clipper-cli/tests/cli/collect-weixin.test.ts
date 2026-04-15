@@ -9,6 +9,7 @@ import { runCollectCommand } from '../../src/cli/commands/collect.js'
 interface DebugRequestArtifact {
   url?: string
   method?: string
+  proxy?: string
   headers?: Record<string, string>
   timeout?: number
 }
@@ -38,7 +39,7 @@ describe('collect command weixin integration', () => {
       url: 'https://mp.weixin.qq.com/s?__biz=fixture-article',
       cwd: fixtureCwd,
       output: outputDir,
-      publisher: 'markdown'
+      format: 'markdown'
     })
 
     expect(result.collectorName).toBe('weixin')
@@ -73,7 +74,8 @@ describe('collect command weixin integration', () => {
       url: 'https://mp.weixin.qq.com/s/fixture-article',
       cwd: fixtureCwd,
       output: outputDir,
-      publisher: 'markdown',
+      format: 'markdown',
+      proxy: 'http://127.0.0.1:7890',
       debug: true
     })
 
@@ -85,6 +87,7 @@ describe('collect command weixin integration', () => {
     expect(request).toMatchObject({
       url: 'https://mp.weixin.qq.com/s/fixture-article',
       method: 'GET',
+      proxy: 'http://127.0.0.1:7890',
       timeout: 30000,
       headers: {
         'User-Agent': expect.any(String),

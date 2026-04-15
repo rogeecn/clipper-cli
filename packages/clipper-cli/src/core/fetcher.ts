@@ -1,7 +1,8 @@
+import { ProxyAgent } from 'undici'
 import type { RequestResult, RequestSnapshot } from './request.js'
 
 export async function fetchHtml(input: RequestSnapshot): Promise<RequestResult> {
-  const response = await fetch(input.url, {
+  const requestInit: RequestInit & { dispatcher?: ProxyAgent } = {
     method: input.method,
     headers: input.headers,
     body: input.body,
@@ -12,7 +13,13 @@ export async function fetchHtml(input: RequestSnapshot): Promise<RequestResult> 
     credentials: input.credentials,
     cache: input.cache,
     integrity: input.integrity
-  })
+  }
+
+  if (input.proxy) {
+    requestInit.dispatcher = new ProxyAgent(input.proxy)
+  }
+
+  const response = await fetch(input.url, requestInit)
   const body = await response.text()
   const headers: Record<string, string> = {}
 
