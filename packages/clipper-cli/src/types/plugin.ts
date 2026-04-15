@@ -5,6 +5,9 @@ import type { RequestResult } from '../core/request.js'
 
 export interface CollectorPlugin {
   name: string
+  displayName?: string
+  description?: string
+  urlPatterns?: string[]
   match(url: URL): boolean
   shouldFallback?(result: RequestResult, ctx: ClipperContext): boolean
   buildClientOptions?(ctx: ClipperContext): Partial<ClientOptions>

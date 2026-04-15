@@ -59,13 +59,17 @@ describe('package-local cli behavior', () => {
     })
   })
 
-  it('lists runtime plugin names instead of a placeholder payload', async () => {
+  it('lists runtime collector rules in plain text', async () => {
     const result = await listPlugins()
 
-    expect(result.collectors).toContain('generic')
-    expect(result.transformers).toContain('default')
-    expect(result.publishers).toContain('markdown')
-    expect(result.publishers).toContain('obsidian')
-    expect(result).not.toHaveProperty('status')
+    expect(result).toContain('可采集链接规则:')
+    expect(result).toContain('微信公众号文章')
+    expect(result).toContain('标识: weixin')
+    expect(result).toContain('https://mp.weixin.qq.com/s?*')
+    expect(result).toContain('通用网页')
+    expect(result).toContain('https://*')
+    expect(result).not.toContain('"collectors"')
+    expect(result).not.toContain('publishers')
+    expect(result).not.toContain('transformers')
   })
 })

@@ -6,6 +6,12 @@ import type { RuntimeConfig } from '../types/plugin.js'
 
 export const genericCollector = {
   name: 'generic',
+  displayName: '通用网页',
+  description: '采集常见 HTML 页面，提取标题和正文内容。',
+  urlPatterns: [
+    'http://*',
+    'https://*'
+  ],
   match() {
     return true
   },

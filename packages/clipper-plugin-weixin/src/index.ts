@@ -158,6 +158,12 @@ function parseWeixinArticle(html = ''): ParsedWeixinArticle | null {
 
 export const weixinCollector: CollectorPlugin = {
   name: 'weixin',
+  displayName: '微信公众号文章',
+  description: '采集微信公众号文章页，提取正文、摘要和相关元信息。',
+  urlPatterns: [
+    'https://mp.weixin.qq.com/s?*',
+    'https://mp.weixin.qq.com/s/*'
+  ],
   match(url) {
     return isWeixinArticleUrl(url)
   },
