@@ -31,12 +31,107 @@ function createJsonOutput(outputDir: string, document: ClipperDocument): Publish
   }
 }
 
+function isPlainScalar(value: string): boolean {
+  return /^[\p{L}\p{N} ._/@:+?&=%#\-]+$/u.test(value)
+}
+
+function formatScalar(value: unknown): string {
+  if (typeof value === 'string') {
+    return isPlainScalar(value) ? value : JSON.stringify(value)
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value)
+  }
+
+  return JSON.stringify(value)
+}
+
+function formatYamlValue(value: unknown, indent = ''): string[] {
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return [`${indent}[]`]
+    }
+
+    return value.flatMap((item) => {
+      if (item && typeof item === 'object' && !Array.isArray(item)) {
+        const entries = Object.entries(item)
+
+        if (entries.length === 0) {
+          return [`${indent}- {}`]
+        }
+
+        const [firstKey, firstValue] = entries[0]
+        const firstLine = formatYamlValue(firstValue, `${indent}  `)
+        const lines = [`${indent}- ${firstKey}: ${firstLine[0].trimStart()}`]
+
+        for (const line of firstLine.slice(1)) {
+          lines.push(line)
+        }
+
+        for (const [key, nestedValue] of entries.slice(1)) {
+          const nestedLines = formatYamlValue(nestedValue, `${indent}  `)
+          lines.push(`${indent}  ${key}: ${nestedLines[0].trimStart()}`)
+          for (const line of nestedLines.slice(1)) {
+            lines.push(line)
+          }
+        }
+
+        return lines
+      }
+
+      return [`${indent}- ${formatScalar(item)}`]
+    })
+  }
+
+  if (value && typeof value === 'object') {
+    const entries = Object.entries(value)
+
+    if (entries.length === 0) {
+      return [`${indent}{}`]
+    }
+
+    return entries.flatMap(([key, nestedValue]) => {
+      const nestedLines = formatYamlValue(nestedValue, `${indent}  `)
+      return [`${indent}${key}: ${nestedLines[0].trimStart()}`, ...nestedLines.slice(1)]
+    })
+  }
+
+  return [`${indent}${formatScalar(value)}`]
+}
+
+function serializeMarkdownDocument(document: ClipperDocument): string {
+  const frontMatter: Array<[string, unknown]> = [
+    ['title', document.title],
+    ['url', document.url],
+    ['excerpt', document.excerpt],
+    ['author', document.author],
+    ['publishedAt', document.publishedAt],
+    ['source', document.source]
+  ].filter(([, value]) => value !== undefined && value !== '') as Array<[string, unknown]>
+
+  if (document.tags.length > 0) {
+    frontMatter.push(['tags', document.tags])
+  }
+
+  if (Object.keys(document.meta).length > 0) {
+    frontMatter.push(['meta', document.meta])
+  }
+
+  const frontMatterBody = frontMatter.flatMap(([key, value]) => {
+    const lines = formatYamlValue(value, '  ')
+    return [`${key}: ${lines[0].trimStart()}`, ...lines.slice(1)]
+  }).join('\n')
+
+  return `---\n${frontMatterBody}\n---\n\n${document.content.markdown}`
+}
+
 function serializeCollectOutput(document: ClipperDocument, format: NonNullable<CollectOptions['format']>): string {
   if (format === 'json') {
     return JSON.stringify(document)
   }
 
-  return document.content.markdown
+  return serializeMarkdownDocument(document)
 }
 
 export async function runCollectCommand(options: CollectOptions) {

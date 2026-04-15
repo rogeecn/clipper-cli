@@ -98,4 +98,29 @@ describe('collect command weixin integration', () => {
       }
     })
   })
+
+  it('writes markdown stdout with weixin metadata front matter', async () => {
+    const stdoutWrite = vi.spyOn(process.stdout, 'write').mockReturnValue(true)
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      status: 200,
+      text: async () => articleHtml,
+      headers: {
+        forEach(callback: (value: string, key: string) => void) {
+          callback('text/html', 'content-type')
+        }
+      }
+    }))
+
+    await runCollectCommand({
+      url: 'https://mp.weixin.qq.com/s/fixture-article',
+      cwd: fixtureCwd,
+      format: 'markdown'
+    })
+
+    expect(stdoutWrite).toHaveBeenCalledWith(expect.stringContaining('title: Weixin Fixture Article'))
+    expect(stdoutWrite).toHaveBeenCalledWith(expect.stringContaining('excerpt: Fixture article excerpt'))
+    expect(stdoutWrite).toHaveBeenCalledWith(expect.stringContaining('source: weixin'))
+    expect(stdoutWrite).toHaveBeenCalledWith(expect.stringContaining('Fixture Heading'))
+  })
 })

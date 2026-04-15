@@ -41,6 +41,9 @@ describe('collect command runtime', () => {
     })
 
     expect(result.output).toBeUndefined()
+    expect(stdoutWrite).toHaveBeenCalledWith(expect.stringContaining('title: Hello'))
+    expect(stdoutWrite).toHaveBeenCalledWith(expect.stringContaining('author: Test Author'))
+    expect(stdoutWrite).toHaveBeenCalledWith(expect.stringContaining('source: default'))
     expect(stdoutWrite).toHaveBeenCalledWith(expect.stringContaining('World'))
   })
 
@@ -364,14 +367,19 @@ function createConfigDir(assets: Array<{ url: string; filename?: string }> = [])
     normalizeDocument: (ctx) => ({
       url: ctx.input.url,
       title: 'Hello',
+      excerpt: 'Test excerpt',
+      author: 'Test Author',
+      publishedAt: '2026-04-15T00:00:00.000Z',
       content: {
         html: ctx.artifacts.rawHtml,
         markdown: 'World'
       },
       assets: ${JSON.stringify(assets)},
-      meta: {},
+      meta: {
+        site: 'example'
+      },
       source: 'default',
-      tags: []
+      tags: ['test']
     })
   }],
   publishers: []
